@@ -9,9 +9,12 @@ namespace AdventOfCode
     {
         private const string BaseUriString = "https://adventofcode.com/2018/";
 
+        private const string DefaultSessionId =
+            "53616c7465645f5f5bd14e6affcbcc327445c4b44178804f6d28049f607d3c1acb5d9bb0b288f156a5599cb03937889a";
+
         private readonly string _sessionId;
 
-        public AdventOfCodeClient(string sessionId)
+        public AdventOfCodeClient(string sessionId = DefaultSessionId)
         {
             _sessionId = sessionId;
         }

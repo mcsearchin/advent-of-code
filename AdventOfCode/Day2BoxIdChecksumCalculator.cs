@@ -34,5 +34,55 @@ namespace AdventOfCode
 
             return characterOccurrences;
         }
+
+        public string FindCommonBoxIdString(string boxIdsString)
+        {
+            return FindCommonBoxIdString(boxIdsString.Split("\n"));
+        }
+
+        private string FindCommonBoxIdString(string[] boxIds)
+        {
+            if (boxIds.Length < 2) { return null; }
+
+            var boxId = boxIds.First();
+            var theRest = boxIds.Skip(1).ToArray();
+            var correctOtherId = theRest.FirstOrDefault(otherId => HasSingleNonMatchingCharacter(boxId, otherId));
+
+            if (correctOtherId == null)
+            {
+                return FindCommonBoxIdString(theRest);
+            }
+
+            var nonMatchingIndex = GetSingleNonMatchingIndex(boxId, correctOtherId);
+
+            return nonMatchingIndex.HasValue ? RemoveCharacterAtIndex(correctOtherId, nonMatchingIndex.Value) : null;
+        }
+
+        private bool HasSingleNonMatchingCharacter(string first, string second)
+        {
+            return GetSingleNonMatchingIndex(first, second).HasValue;
+        }
+
+        private int? GetSingleNonMatchingIndex(string first, string second)
+        {
+            int? firstNonMatchingIndex = null;
+            int index;
+            for (index = 0; index < first.Length && index < second.Length; index++)
+            {
+                if (first[index] == second[index]) continue;
+
+                if (firstNonMatchingIndex.HasValue) { return null; }
+
+                firstNonMatchingIndex = index;
+            }
+
+            return firstNonMatchingIndex;
+        }
+
+        private string RemoveCharacterAtIndex(string stringy, int index)
+        {
+            return stringy.Substring(0, index) +
+                   stringy.Substring(index + 1, stringy.Length - index - 1);
+        }
     }
 }

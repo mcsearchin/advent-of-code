@@ -42,8 +42,7 @@ namespace AdventOfCodeTests
         [Fact]
         public async void CalculateChange_CanCalculateFrequencyChangeForAdventOfCode()
         {
-            var client = new AdventOfCodeClient("53616c7465645f5f5bd14e6affcbcc327445c4b44178804f6d28049f607d3c1acb5d9bb0b288f156a5599cb03937889a");
-            var input = await client.Get("day/1/input");
+            var input = await new AdventOfCodeClient().Get("day/1/input");
             var frequencyChange = _subject.CalculateChange(input);
             _output.WriteLine("frequencyChange : {0}", frequencyChange);
         }
@@ -63,8 +62,7 @@ namespace AdventOfCodeTests
         [Fact]
         public async void FindFirstDuplicateFrequency_CanFindSolutionForAdventOfCode()
         {
-            var client = new AdventOfCodeClient("53616c7465645f5f5bd14e6affcbcc327445c4b44178804f6d28049f607d3c1acb5d9bb0b288f156a5599cb03937889a");
-            var input = await client.Get("day/1/input");
+            var input = await new AdventOfCodeClient().Get("day/1/input");
             var duplicateFrequency = _subject.FindFirstDuplicateFrequency(input);
             _output.WriteLine("duplicateFrequency : {0}", duplicateFrequency);
         }
