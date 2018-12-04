@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -7,13 +6,19 @@ namespace AdventOfCode
 {
     public class Day3FabricClaimCalculator
     {
-        public int CalculateTotalOverlapping(string[] claimStrings)
+        public int CalculateTotalOverlapping(IEnumerable<string> claimStrings)
         {
-            if (claimStrings.Length < 2) {return 0;}
-
+            var pointCounts = new Dictionary<string, int>();
             var claims = claimStrings.Select(ParseClaim);
-            var overLappingCoordinates = GetOverlappingCoordinates(claims.First(), claims.Last());
-            return overLappingCoordinates.Length;
+            foreach (var claim in claims)
+            {
+                var points = GetPoints(claim.x, claim.RightSide, claim.y, claim.BottomSide);
+                foreach (var point in points)
+                {
+                    pointCounts[point] = pointCounts.GetValueOrDefault(point) + 1;
+                }
+            }
+            return pointCounts.Values.Where(count => count > 1).ToList().Count;
         }
 
         private Claim ParseClaim(string claimString)
@@ -29,33 +34,12 @@ namespace AdventOfCode
             };
         }
 
-        private string[] GetOverlappingCoordinates(Claim first, Claim second)
+        private string[] GetPoints(int x1, int x2, int y1, int y2)
         {
-            if (second.x >= first.x && second.x < first.rightSide &&
-                second.y >= first.y && second.y < first.bottomSide)
-            {
-                return new [] {"overlap"};
-            }
-
-            if (second.rightSide > first.x && second.rightSide <= first.rightSide &&
-                second.y >= first.y && second.y < first.bottomSide)
-            {
-                return new [] {"overlap"};
-            }
-
-            if (second.x >= first.x && second.x < first.rightSide &&
-                second.bottomSide > first.y && second.bottomSide <= first.bottomSide)
-            {
-                return new [] {"overlap"};
-            }
-
-            if (second.rightSide > first.x && second.rightSide <= first.rightSide &&
-                second.bottomSide > first.y && second.bottomSide <= first.bottomSide)
-            {
-                return new [] {"overlap"};
-            }
-
-            return new string[] {};
+            return Enumerable.Range(x1, x2 - x1)
+                .SelectMany(x => Enumerable.Range(y1, y2 - y1),
+                    (x, y) => $"{x},{y}")
+                .ToArray();
         }
     }
 
@@ -63,20 +47,8 @@ namespace AdventOfCode
     {
         internal int id, x, y, width, height;
 
-        internal int rightSide
-        {
-            get
-            {
-                return x + width;
-            }
-        }
+        internal int RightSide => x + width;
 
-        internal int bottomSide
-        {
-            get
-            {
-                return y + height;
-            }
-        }
+        internal int BottomSide => y + height;
     }
 }

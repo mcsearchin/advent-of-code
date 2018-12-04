@@ -126,5 +126,63 @@ namespace AdventOfCodeTests
 
             Assert.Equal(1, _subject.CalculateTotalOverlapping(claims));
         }
+
+        [Fact]
+        public void
+            CalculateTotalOverlapping_ReturnsTheOverlappingAreaWhenAClaimOverlapsByMoreThanOneAtTheRightAndBottom()
+        {
+            var claims = new[] {"#1 @ 2,2: 3x3", "#2 @ 3,3: 3x3"};
+
+            Assert.Equal(4, _subject.CalculateTotalOverlapping(claims));
+        }
+
+        [Fact]
+        public void CalculateTotalOverlapping_ReturnsTheOverlappingAreaOneWhenAClaimOverlapsByMoreThanOneAtTheLeftAndBottom()
+        {
+            var claims = new[] {"#1 @ 2,2: 3x3", "#2 @ 1,4: 3x3"};
+
+            Assert.Equal(2, _subject.CalculateTotalOverlapping(claims));
+        }
+
+        [Fact]
+        public void
+            CalculateTotalOverlapping_ReturnsTheOverlappingAreaWhenAClaimOverlapsByMoreThanOneAtTheRightAndTop()
+        {
+            var claims = new[] {"#1 @ 2,2: 3x3", "#2 @ 3,0: 3x3"};
+
+            Assert.Equal(2, _subject.CalculateTotalOverlapping(claims));
+        }
+
+        [Fact]
+        public void CalculateTotalOverlapping_ReturnsTheOverlappingAreaOneWhenAClaimOverlapsByMoreThanOneAtTheLeftAndTop()
+        {
+            var claims = new[] {"#1 @ 2,2: 3x3", "#2 @ 1,1: 3x3"};
+
+            Assert.Equal(4, _subject.CalculateTotalOverlapping(claims));
+        }
+
+        [Fact]
+        public void CalculateTotalOverlapping_ReturnsOverlapsForMoreThanTwoClaims()
+        {
+            var claims = new[] {"#1 @ 0,0: 2x2", "#2 @ 1,1: 2x2", "#3 @ 2,2: 2x2"};
+
+            Assert.Equal(2, _subject.CalculateTotalOverlapping(claims));
+        }
+
+        [Fact]
+        public void CalculateTotalOverlapping_DoesNotCountTheSameOverlapMoreThanOnce()
+        {
+            var claims = new[] {"#1 @ 0,0: 3x3", "#2 @ 1,1: 3x3", "#3 @ 2,2: 3x3", "#4 @ 3,3: 3x3"};
+
+            Assert.Equal(10, _subject.CalculateTotalOverlapping(claims));
+        }
+
+        [Fact]
+        public async void CalculateTotalOverlapping_CanFindSolutionForAdventOfCode()
+        {
+            var input = await new AdventOfCodeClient().GetLines("day/3/input");
+            var totalOverlapping = _subject.CalculateTotalOverlapping(input);
+            _output.WriteLine("totalOverlapping : {0}", totalOverlapping);
+        }
     }
 }
