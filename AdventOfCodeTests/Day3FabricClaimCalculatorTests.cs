@@ -184,5 +184,37 @@ namespace AdventOfCodeTests
             var totalOverlapping = _subject.CalculateTotalOverlapping(input);
             _output.WriteLine("totalOverlapping : {0}", totalOverlapping);
         }
+
+        [Fact]
+        public void FindNonOverlapping_FindsNothingWhenAllClaimsOverlap()
+        {
+            var claims = new[] {"#1 @ 0,0: 2x2", "#2 @ 1,1: 2x2", "#3 @ 2,2: 2x2"};
+
+            Assert.Null(_subject.FindNonOverlapping(claims));
+        }
+
+        [Fact]
+        public void FindNonOverlapping_ReturnsTheOnlyClaimIdWhenASingleClaimIsPassed()
+        {
+            var claims = new[] {"#43 @ 0,0: 2x2"};
+
+            Assert.Equal(43, _subject.FindNonOverlapping(claims));
+        }
+
+        [Fact]
+        public void FindNonOverlapping_ReturnsTheNonOverlappingClaimId()
+        {
+            var claims = new[] {"#1 @ 0,0: 2x2", "#2 @ 1,1: 2x2", "#3 @ 3,3: 2x2"};
+
+            Assert.Equal(3, _subject.FindNonOverlapping(claims));
+        }
+
+        [Fact]
+        public async void FindNonOverlapping_CanFindSolutionForAdventOfCode()
+        {
+            var input = await new AdventOfCodeClient().GetLines("day/3/input");
+            var nonOverlappingId = _subject.FindNonOverlapping(input);
+            _output.WriteLine("nonOverlappingId : {0}", nonOverlappingId);
+        }
     }
 }

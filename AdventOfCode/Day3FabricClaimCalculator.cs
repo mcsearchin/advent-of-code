@@ -8,17 +8,27 @@ namespace AdventOfCode
     {
         public int CalculateTotalOverlapping(IEnumerable<string> claimStrings)
         {
-            var pointCounts = new Dictionary<string, int>();
             var claims = claimStrings.Select(ParseClaim);
+            var pointCounts = GetPointCounts(claims);
+            return pointCounts.Values.Where(count => count > 1).ToList().Count;
+        }
+
+        public int? FindNonOverlapping(IEnumerable<string> claimStrings)
+        {
+            var claims = claimStrings.Select(ParseClaim);
+            var pointCounts = GetPointCounts(claims);
             foreach (var claim in claims)
             {
                 var points = GetPoints(claim.x, claim.RightSide, claim.y, claim.BottomSide);
-                foreach (var point in points)
+                var noOverlap = points.All(point => pointCounts[point] <= 1);
+
+                if (noOverlap)
                 {
-                    pointCounts[point] = pointCounts.GetValueOrDefault(point) + 1;
+                    return claim.id;
                 }
             }
-            return pointCounts.Values.Where(count => count > 1).ToList().Count;
+
+            return null;
         }
 
         private Claim ParseClaim(string claimString)
@@ -40,6 +50,21 @@ namespace AdventOfCode
                 .SelectMany(x => Enumerable.Range(y1, y2 - y1),
                     (x, y) => $"{x},{y}")
                 .ToArray();
+        }
+
+        private Dictionary<string, int> GetPointCounts(IEnumerable<Claim> claims)
+        {
+            var pointCounts = new Dictionary<string, int>();
+            foreach (var claim in claims)
+            {
+                var points = GetPoints(claim.x, claim.RightSide, claim.y, claim.BottomSide);
+                foreach (var point in points)
+                {
+                    pointCounts[point] = pointCounts.GetValueOrDefault(point) + 1;
+                }
+            }
+
+            return pointCounts;
         }
     }
 
