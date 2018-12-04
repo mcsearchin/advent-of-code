@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -32,6 +34,13 @@ namespace AdventOfCode
                 result.EnsureSuccessStatusCode();
                 return await result.Content.ReadAsStringAsync();
             }
+        }
+
+        public async Task<IEnumerable<string>> GetLines(string Path)
+        {
+            var content = await Get(Path);
+            var lines = content.Split("\n");
+            return lines.Last().Trim().Length > 0 ? lines : lines.Take(lines.Length - 1);
         }
     }
 }
