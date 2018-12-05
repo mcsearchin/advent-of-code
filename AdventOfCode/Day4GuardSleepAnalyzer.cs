@@ -25,6 +25,33 @@ namespace AdventOfCode
             return (sleepiestGuard, sleepiestMinute);
         }
 
+        public (int guardId, int minute) FindMostConsistentlySleepyGuardAndMinute(IEnumerable<string> guardLogStrings)
+        {
+            var sleepBlocks = ParseSleepBlocks(guardLogStrings).ToList();
+
+            var blocksByGuard = sleepBlocks
+                .GroupBy(sleepBlock => sleepBlock.GuardId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group
+                );
+
+            int mostConsistentGuard = -1, sleepiestMinute = -1, sleepiestMinuteCount = -1;
+            foreach (var guardSleepBlock in blocksByGuard)
+            {
+                var guardSleepMinuteCounts = CountSleepMinutes(guardSleepBlock.Value);
+                var guardSleepiestMinuteCountPair = guardSleepMinuteCounts.First(pair => pair.Value == guardSleepMinuteCounts.Values.Max());
+                if (guardSleepiestMinuteCountPair.Value > sleepiestMinuteCount)
+                {
+                    mostConsistentGuard = guardSleepBlock.Key;
+                    sleepiestMinute = guardSleepiestMinuteCountPair.Key;
+                    sleepiestMinuteCount = guardSleepiestMinuteCountPair.Value;
+                }
+            }
+
+            return (mostConsistentGuard, sleepiestMinute);
+        }
+
         private IEnumerable<SleepBlock> ParseSleepBlocks(IEnumerable<string> guardLogStrings)
         {
             var sleepBlocks = new List<SleepBlock>();
