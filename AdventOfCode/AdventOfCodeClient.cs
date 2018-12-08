@@ -32,7 +32,8 @@ namespace AdventOfCode
             {
                 var result = await client.GetAsync(Path);
                 result.EnsureSuccessStatusCode();
-                return await result.Content.ReadAsStringAsync();
+                var content = await result.Content.ReadAsStringAsync();
+                return content.Trim();
             }
         }
 

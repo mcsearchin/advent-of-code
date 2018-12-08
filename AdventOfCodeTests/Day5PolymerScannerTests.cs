@@ -45,11 +45,37 @@ namespace AdventOfCodeTests
             Assert.Equal(3, _subject.CountUnits("abBCccDdCee"));
         }
 
-        [Fact]
+        [Fact(Skip="slowbie")]
         public async void CountUnits_CanFindSolutionForAdventOfCode()
         {
             var input = await new AdventOfCodeClient().Get("day/5/input");
             var unitCount = _subject.CountUnits(input);
+            _output.WriteLine("unitCount : {0}", unitCount);
+        }
+
+        [Fact]
+        public void CountReducedUnits_RemovesAllLowercaseCharactersToGetShortestAnswer()
+        {
+            Assert.Equal(0, _subject.CountReducedUnits("aaa"));
+        }
+
+        [Fact]
+        public void CountReducedUnits_RemovesAllUpperAndLowercaseCharactersToGetShortestAnswer()
+        {
+            Assert.Equal(3, _subject.CountReducedUnits("AAbcbaa"));
+        }
+
+        [Fact]
+        public void CountReducedUnits_RemovesAllUpperAndLowercaseCharactersWithReactionToGetShortestAnswer()
+        {
+            Assert.Equal(1, _subject.CountReducedUnits("AAbbaBBBA"));
+        }
+
+        [Fact]
+        public async void CountReducedUnits_CanFindSolutionForAdventOfCode()
+        {
+            var input = await new AdventOfCodeClient().Get("day/5/input");
+            var unitCount = _subject.CountReducedUnits(input);
             _output.WriteLine("unitCount : {0}", unitCount);
         }
     }

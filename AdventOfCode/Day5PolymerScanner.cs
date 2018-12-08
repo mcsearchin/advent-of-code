@@ -1,11 +1,31 @@
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace AdventOfCode
 {
     public class Day5PolymerScanner
     {
         public int CountUnits(string polymerString)
         {
-            return RemoveReactingUnitPair(polymerString.Trim()).Length;
+            return RemoveReactingUnitPair(polymerString).Length;
+        }
+
+        public int CountReducedUnits(string polymerString)
+        {
+            var lowercase = Enumerable.Range('a', 'z' - 'a' + 1).Select(character => (char) character).ToArray();
+            var uppercase = Enumerable.Range('A', 'Z' - 'A' + 1).Select(character => (char) character).ToArray();
+
+            var counts = new Dictionary<char, int>();
+            for (var index = 0; index < lowercase.Length; index++)
+            {
+                var count = RemoveReactingUnitPair(polymerString
+                    .Replace(lowercase[index].ToString(), "")
+                    .Replace(uppercase[index].ToString(), "")).Length;
+                counts[lowercase[index]] = count;
+            }
+
+            return counts.Values.Min();
         }
 
         private string RemoveReactingUnitPair(string polymerString)
