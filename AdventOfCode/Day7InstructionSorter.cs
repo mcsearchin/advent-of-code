@@ -14,31 +14,60 @@ namespace AdventOfCode
 
             while (remainingSteps.Count > 0)
             {
-                var remainingDependencies = GetRemainingDependencies(dependencies, remainingSteps);
-
-                var possibleNextSteps = new List<char>();
-                foreach (var dependency in remainingDependencies)
-                {
-                    if (IsNotADependent(dependency.Parent, remainingDependencies))
-                    {
-                        possibleNextSteps.Add(dependency.Parent);
-                    }
-                }
-
-                if (possibleNextSteps.Count > 0)
-                {
-                    var nextStep = possibleNextSteps.Min();
-                    sortedSteps =  sortedSteps + nextStep;
-                    remainingSteps.Remove(nextStep);
-                }
-                else
-                {
-                    sortedSteps = sortedSteps + Alphabetize(remainingSteps);
-                    remainingSteps.Clear();
-                }
+                var nextStep = GetPossibleNextSteps(dependencies, remainingSteps).Min();
+                sortedSteps =  sortedSteps + nextStep;
+                remainingSteps.Remove(nextStep);
             }
 
             return sortedSteps;
+        }
+
+        public int CalculateTimeToComplete(IEnumerable<string> instructionStrings, int numberOfWorkers = 5)
+        {
+            var dependencies = ParseStepDependencies(instructionStrings);
+            var remainingSteps = ParseSteps(dependencies);
+            var workers = Enumerable.Repeat(new Worker(), numberOfWorkers).ToArray();
+
+            var elapsedSeconds = 0;
+            do
+            {
+                for (var index = 0; index < workers.Length; index++)
+                {
+                    if (!workers[index].CurrentStep.HasValue)
+                    {
+                        var possibleNextSteps = GetPossibleNextSteps(dependencies, remainingSteps);
+
+                        var stepsInProgress = GetStepsInProgress(workers);
+                        var nextStep = possibleNextSteps.FirstOrDefault(step => !stepsInProgress.Contains(step));
+
+                        if (nextStep != 0)
+                        {
+                            workers[index].CurrentStep = nextStep;
+                            workers[index].Remaining = GetStepDuration(nextStep);
+                        }
+                    }
+                }
+
+                for (var index = 0; index < workers.Length; index++)
+                {
+                    if (workers[index].Remaining > 0)
+                    {
+                        workers[index].Remaining -= 1;
+                    }
+
+                    if (workers[index].CurrentStep.HasValue && workers[index].Remaining < 1)
+                    {
+                        remainingSteps.Remove(workers[index].CurrentStep.Value);
+                        workers[index].CurrentStep = null;
+                    }
+                }
+
+                elapsedSeconds++;
+
+            } while (remainingSteps.Count > 0);
+
+
+            return elapsedSeconds;
         }
 
         private List<StepDependency> ParseStepDependencies(IEnumerable<string> instructionStrings)
@@ -57,6 +86,25 @@ namespace AdventOfCode
                 (allSteps, dependency) => new HashSet<char>(allSteps.Union(new[] {dependency.Parent, dependency.Child})));
         }
 
+        private IEnumerable<char> GetPossibleNextSteps(List<StepDependency> dependencies, HashSet<char> remainingSteps)
+        {
+            var remainingDependencies = GetRemainingDependencies(dependencies, remainingSteps);
+            var possibleNextSteps = new List<char>();
+            foreach (var dependency in remainingDependencies)
+            {
+                if (IsNotADependent(dependency.Parent, remainingDependencies))
+                {
+                    possibleNextSteps.Add(dependency.Parent);
+                }
+            }
+
+            if (possibleNextSteps.Count < 1)
+            {
+                possibleNextSteps = remainingSteps.ToList();
+            }
+
+            return possibleNextSteps.OrderBy(step => step);
+        }
 
         private List<StepDependency> GetRemainingDependencies(List<StepDependency> dependencies, HashSet<char> remainingSteps)
         {
@@ -64,19 +112,34 @@ namespace AdventOfCode
                 .Where(dependency => remainingSteps.Contains(dependency.Parent))
                 .ToList();
         }
+
         private static bool IsNotADependent(char step, List<StepDependency> dependencies)
         {
             return dependencies.All(dependency => step != dependency.Child);
         }
 
-        private string Alphabetize(IEnumerable<char> steps)
+        private static List<char> GetStepsInProgress(Worker[] workers)
         {
-            return String.Concat(steps.OrderBy(character => character));
+            return workers
+                .Where(worker => worker.CurrentStep.HasValue)
+                .Select(worker => worker.CurrentStep.Value)
+                .ToList();
+        }
+
+        private int GetStepDuration(char step)
+        {
+            return step - 'A' + 1;
         }
 
         internal struct StepDependency
         {
             internal char Parent, Child;
+        }
+
+        internal struct Worker
+        {
+            internal char? CurrentStep;
+            internal int Remaining;
         }
     }
 }
