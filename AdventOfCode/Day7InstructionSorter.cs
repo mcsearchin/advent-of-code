@@ -22,7 +22,7 @@ namespace AdventOfCode
             return sortedSteps;
         }
 
-        public int CalculateTimeToComplete(IEnumerable<string> instructionStrings, int numberOfWorkers = 5)
+        public int CalculateTimeToComplete(IEnumerable<string> instructionStrings, int baseStepDuration = 60, int numberOfWorkers = 5)
         {
             var dependencies = ParseStepDependencies(instructionStrings);
             var remainingSteps = ParseSteps(dependencies);
@@ -38,12 +38,12 @@ namespace AdventOfCode
                         var possibleNextSteps = GetPossibleNextSteps(dependencies, remainingSteps);
 
                         var stepsInProgress = GetStepsInProgress(workers);
-                        var nextStep = possibleNextSteps.FirstOrDefault(step => !stepsInProgress.Contains(step));
+                        var availableNextSteps = possibleNextSteps.Where(step => !stepsInProgress.Contains(step)).ToList();
 
-                        if (nextStep != 0)
+                        if (availableNextSteps.Any())
                         {
-                            workers[index].CurrentStep = nextStep;
-                            workers[index].Remaining = GetStepDuration(nextStep);
+                            workers[index].CurrentStep = availableNextSteps.First();
+                            workers[index].Remaining = GetStepDuration(availableNextSteps.First(), baseStepDuration);
                         }
                     }
                 }
@@ -126,9 +126,9 @@ namespace AdventOfCode
                 .ToList();
         }
 
-        private int GetStepDuration(char step)
+        private int GetStepDuration(char step, int baseStepDuration)
         {
-            return step - 'A' + 1;
+            return step - 'A' + 1 + baseStepDuration;
         }
 
         internal struct StepDependency

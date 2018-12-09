@@ -90,7 +90,7 @@ namespace AdventOfCode
         {
             var instructions = new[] {"Step A must be finished before step B can begin."};
 
-            Assert.Equal(3, _subject.CalculateTimeToComplete(instructions));
+            Assert.Equal(123, _subject.CalculateTimeToComplete(instructions));
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace AdventOfCode
                 "Step B must be finished before step D can begin."
             };
 
-            Assert.Equal(6, _subject.CalculateTimeToComplete(instructions));
+            Assert.Equal(6, _subject.CalculateTimeToComplete(instructions, 0));
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace AdventOfCode
                 "Step C must be finished before step D can begin."
             };
 
-            Assert.Equal(13, _subject.CalculateTimeToComplete(instructions, 2));
+            Assert.Equal(14, _subject.CalculateTimeToComplete(instructions, 0, 2));
         }
 
         [Fact]
@@ -127,7 +127,7 @@ namespace AdventOfCode
                 "Step C must be finished before step B can begin."
             };
 
-            Assert.Equal(6, _subject.CalculateTimeToComplete(instructions));
+            Assert.Equal(6, _subject.CalculateTimeToComplete(instructions, 0));
         }
 
         [Fact]
@@ -144,7 +144,7 @@ namespace AdventOfCode
                 "Step F must be finished before step E can begin."
             };
 
-            Assert.Equal(15, _subject.CalculateTimeToComplete(instructions, 2));
+            Assert.Equal(15, _subject.CalculateTimeToComplete(instructions, 0, 2));
         }
 
         [Fact]
