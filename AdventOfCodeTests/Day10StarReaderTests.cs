@@ -16,7 +16,7 @@ namespace AdventOfCodeTests
         }
 
         [Fact]
-        public void GetAlignedStars_ReturnsZeroWhenNumberOfMarblesIsLowerThanMagicMultipleValue()
+        public void GetAlignedStars_WorksForExample()
         {
             var input = new[]
             {
